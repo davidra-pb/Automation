@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import {
   Activity, Target, Lock, ChevronLeft, ChevronRight,
   ShieldCheck, AlertCircle, Printer, X,
-  Globe, Users, Clock, Briefcase, Scale, CreditCard, FileSpreadsheet
+  Globe, Users, Clock, Briefcase, Scale, CreditCard, FileSpreadsheet, CheckCircle
 } from 'lucide-react';
 
 // --- CONFIG ---
-const APP_VERSION = "v.2.1 (BIA Edition - Board Updated)";
+const APP_VERSION = "v.2.2 (BIA Edition - Final Board Deck)";
 
 // --- COMPONENTS ---
 
@@ -95,10 +95,10 @@ const ContextSlide = () => (
               <strong>PayBox</strong> נדרשת להבטיח זמינות ורציפות תפקודית גם בתרחישי הקיצון המחמירים ביותר.
             </p>
             <p>
-              בחודשים האחרונים הובלנו סקר מקיף, חוצה-ארגון, למיפוי התפקידים והתהליכים הקריטיים בכלל מחלקות החברה. הסקר בחן את רציפות התפקוד הנדרשת בשעת חירום, בהתבסס על תרחישי הייחוס השונים.
+              בחודשים האחרונים החברה ביצעה סקר מקיף, חוצה תהליכים ותפקידים קריטיים בחברה. הסקר בחן את התהליכים החשובים של כל תפקיד ומחלקה בזמן חירום על פי תרחישי הייחוס.
             </p>
             <p>
-              תהליך ה-BIA (ניתוח השפעות עסקיות) המוצג בפניכם הינו התוצר הישיר של עבודת עומק זו. התהליך ממפה את הפעילויות הקריטיות, קובע יעדי התאוששות (RTO) הנגזרים מהמחויבות המשפטית והשירותית ללקוחות, ומגבש פתרונות עוקפים לזמן משבר.
+              התוצאה שלפניכם הינה התוצר של תהליך זה. תהליך ה-BIA (ניתוח השפעות עסקיות) ממפה את התהליכים הקריטיים בחברה, קובע יעדי התאוששות (RTO) שנגזרים מהמחויבות המשפטית והשירותית שלנו ללקוחות, ומגדיר פתרונות עוקפים לזמן משבר.
             </p>
           </div>
         </div>
@@ -236,7 +236,7 @@ const ScenariosSlide = () => (
                     </li>
                     <li className="flex items-start gap-3">
                         <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 mt-2 shrink-0"></div>
-                        <div><strong>נפילת מרכזייה קולית (*9575):</strong> ניתוב אוטומטי של השיחות למספרי 076 באמצעות מערכת Cellact ותגבור נציגים.</div>
+                        <div><strong>נפילת מרכזייה קולית:</strong> ניתוב אוטומטי של השיחות למספרי 076 באמצעות מערכת Cellact ותגבור נציגים.</div>
                     </li>
                     <li className="flex items-start gap-3">
                         <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 mt-2 shrink-0"></div>
@@ -297,18 +297,71 @@ const FinanceSlide = () => (
     </div>
 );
 
-// 6. Summary Slide
-const SummarySlide = () => (
-    <div className="flex flex-col items-center justify-center h-full text-center space-y-10 animate-fadeIn bg-gradient-to-tl from-sky-50 to-white">
-        <div className="w-32 h-32 bg-sky-100 rounded-full flex items-center justify-center mb-4 shadow-sm print:border print:border-slate-300">
-            <ShieldCheck className="w-16 h-16 text-sky-500" />
+// 6. Work Plan & Resilience
+const WorkPlanSlide = () => (
+    <div className="h-full flex flex-col justify-center px-16 animate-fadeIn overflow-hidden">
+        <div className="mb-8">
+            <h2 className="text-4xl font-bold text-slate-800 mb-4 border-r-8 border-sky-400 pr-6">תוכנית עבודה 2026 ומוכנות ארגונית</h2>
+            <p className="text-slate-500 text-xl">תרגול מעשי של מנגנוני הגיבוי והישענות על תשתיות ענן מתקדמות</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 flex-grow max-h-[60vh]">
+            {/* Part 1: Work Plan */}
+            <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 relative flex flex-col h-full hover:shadow-lg transition-shadow print:border-slate-300">
+                <div className="flex items-center gap-4 mb-5">
+                    <div className="bg-sky-50 p-4 rounded-2xl print:border print:border-sky-200"><Target className="w-8 h-8 text-sky-500" /></div>
+                    <h3 className="text-2xl font-bold text-slate-800">המיקוד לשנה הקרובה: תרגול מעשי</h3>
+                </div>
+                <div className="space-y-4 text-slate-600 text-lg leading-relaxed flex-grow">
+                    <p>
+                        מעבר לאישור תוכנית ה-BIA, תוכנית העבודה לשנה הקרובה כוללת <strong>תרגול מעשי</strong> של הפתרונות העוקפים.
+                    </p>
+                    <ul className="space-y-3 mt-4">
+                        <li className="flex items-start gap-3">
+                            <div className="w-2.5 h-2.5 rounded-full bg-sky-500 mt-2 shrink-0"></div>
+                            <div>דגש על מעבר ויכולת לבניית קבצי שידור מס״ב ישירות משליפת נתונים מה-MongoDB.</div>
+                        </li>
+                        <li className="flex items-start gap-3">
+                            <div className="w-2.5 h-2.5 rounded-full bg-sky-500 mt-2 shrink-0"></div>
+                            <div>תרגול בפועל של ניתוב שיחות למוקד בעת חירום להבטחת רציפות השירות.</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            {/* Part 2: Proven Resilience */}
+            <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 relative flex flex-col h-full hover:shadow-lg transition-shadow print:border-slate-300">
+                <div className="flex items-center gap-4 mb-5">
+                    <div className="bg-emerald-50 p-4 rounded-2xl print:border print:border-emerald-200"><Globe className="w-8 h-8 text-emerald-500" /></div>
+                    <h3 className="text-2xl font-bold text-slate-800">גמישות תפעולית והוכחת יכולת</h3>
+                </div>
+                <div className="space-y-4 text-slate-600 text-lg leading-relaxed flex-grow">
+                    <p>
+                        החברה עובדת בצורה גמישה מאוד מזה מספר שנים. התרגול בפועל של החברה מתקופת הקורונה, וכן מאז תחילת מלחמת ״חרבות ברזל״, אישש את העובדה כי החברה יודעת לבצע עבודה מרחוק.
+                    </p>
+                    <p>
+                        קיימת נגישות מלאה לכלל הנכסים שלנו מרחוק, מה שמאפשר הפעלה רציפה של כלל המחלקות.
+                    </p>
+                    <div className="bg-emerald-50 text-emerald-800 p-4 rounded-xl mt-4 border border-emerald-100 font-medium print:border-emerald-300">
+                        עצם העובדה שכלל מערכות החברה מבוססות ענן, בהחלט מחזקת ומבססת את היכולת הזאת.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+);
+
+// 7. Thank You Slide
+const ThankYouSlide = () => (
+    <div className="flex flex-col items-center justify-center h-full text-center space-y-8 animate-fadeIn bg-gradient-to-br from-sky-50 to-white">
+        <div className="w-32 h-32 bg-sky-100 rounded-full flex items-center justify-center mb-2 shadow-inner print:border print:border-slate-300">
+            <CheckCircle className="w-16 h-16 text-sky-500" />
         </div>
         <div>
-            <h1 className="text-6xl font-extrabold text-slate-800 mb-6 tracking-tight">לסיכום - תוכנית העבודה ל-2026</h1>
-            <p className="text-2xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-                מעבר לאישור תוכנית ה-BIA כפי שהוצגה, תוכנית העבודה לשנה הקרובה כוללת <strong>תרגול מעשי</strong> של הפתרונות העוקפים (דגש על מעבר לאזור חלופי בענן וניתוב שיחות למוקד).
+            <h1 className="text-7xl font-extrabold text-slate-800 mb-4 tracking-tight">תודה רבה!</h1>
+            <p className="text-2xl text-slate-500 max-w-2xl mx-auto leading-relaxed">
+                נשמח לענות על כל שאלה.
             </p>
-            <div className="mt-12 text-slate-400 font-bold text-xl">תודה רבה!</div>
         </div>
     </div>
 );
@@ -325,7 +378,8 @@ const App = () => {
         { component: <RtoStrategySlide />, label: "RTO ורמות קריטיות" },
         { component: <ScenariosSlide />, label: "תרחישים וגיבוי מערכות" },
         { component: <FinanceSlide />, label: "כספים ונזילות בחירום" },
-        { component: <SummarySlide />, label: "סיכום וצעדים הבאים" },
+        { component: <WorkPlanSlide />, label: "תוכנית עבודה 2026" },
+        { component: <ThankYouSlide />, label: "סיום" },
     ];
 
     useEffect(() => {
