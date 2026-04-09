@@ -1,217 +1,493 @@
-import os
-from dotenv import load_dotenv
-from github import Github, Auth
+import React, { useState, useEffect } from 'react';
+import {
+  Activity, Target, Lock, ChevronLeft, ChevronRight,
+  ShieldCheck, AlertCircle, Printer, X,
+  Globe, Users, Clock, Briefcase, Scale, CreditCard, FileSpreadsheet, CheckCircle,
+  Calendar, Zap, Eye, CheckSquare
+} from 'lucide-react';
 
-# --- טעינת הגדרות ---
-load_dotenv()
-GITHUB_TOKEN = os.getenv('gitHubToken')
-REPO_NAME = os.getenv('REPO_Automation')
+// --- CONFIG ---
+const APP_VERSION = "v.3.0 (BIA Edition - Final Board Deck)";
 
+// --- COMPONENTS ---
 
-def upload_to_github(repo, file_path, content):
-    """מעלה קובץ ל-GitHub, יוצר או מעדכן"""
-    try:
-        contents = repo.get_contents(file_path)
-        repo.update_file(contents.path, f"Update {file_path}", content, contents.sha)
-        print(f"✅ עודכן: {file_path}")
-    except:
-        repo.create_file(file_path, f"Create {file_path}", content)
-        print(f"✨ נוצר: {file_path}")
+// Login Screen
+const LoginScreen = ({ onLogin }) => {
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(false);
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (password === 'Pb@2026') {
+      onLogin();
+    } else {
+      setError(true);
+    }
+  };
 
-def main():
-    if not GITHUB_TOKEN or not REPO_NAME:
-        print("❌ שגיאה: חסרים משתני סביבה בקובץ .env")
-        return
+  return (
+    <div className="w-screen h-screen flex items-center justify-center bg-slate-100 font-sans p-4" dir="rtl">
+      <div className="bg-white p-10 rounded-[2rem] shadow-2xl w-full max-w-md text-center border border-slate-200">
+        <div className="w-20 h-20 bg-sky-50 rounded-full flex items-center justify-center mx-auto mb-6">
+          <Lock className="w-10 h-10 text-sky-600" />
+        </div>
+        <h2 className="text-2xl font-bold text-slate-800 mb-2">מצגת דירקטוריון - חסויה</h2>
+        <p className="text-slate-500 mb-8 text-base">אנא הזן סיסמת צפייה כדי להמשיך</p>
 
-    # התחברות לגיטהאב - תוקן למניעת אזהרת ה-Deprecation
-    auth = Auth.Token(GITHUB_TOKEN)
-    g = Github(auth=auth)
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="relative">
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => { setPassword(e.target.value); setError(false); }}
+              placeholder="סיסמה..."
+              className={`w-full px-5 py-3 text-lg border rounded-xl text-right focus:outline-none focus:ring-4 focus:ring-sky-100 transition-all text-slate-700 placeholder-slate-400 ${error ? 'border-red-300 ring-red-50' : 'border-slate-300'}`}
+            />
+          </div>
+          {error && <p className="text-red-500 text-sm text-right font-medium">סיסמה שגויה, נסה שוב</p>}
+          <button
+            type="submit"
+            className="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 text-lg rounded-xl transition-all shadow-lg hover:shadow-sky-200 mt-2"
+          >
+            כניסה למצגת
+          </button>
+        </form>
+        <div className="mt-6 text-slate-400 text-xs font-medium">
+            PayBox BCP Operations • {APP_VERSION}
+        </div>
+      </div>
+    </div>
+  );
+};
 
-    try:
-        # תמיכה בפורמט "username/repo" וגם רק בשם הרפוזיטורי
-        if "/" in REPO_NAME:
-            repo = g.get_repo(REPO_NAME)
-        else:
-            repo = g.get_user().get_repo(REPO_NAME)
-    except Exception as e:
-        print(f"❌ שגיאה 404: לא הצלחתי למצוא את הרפוזיטורי '{REPO_NAME}'")
-        print("💡 מה לבדוק?")
-        print("   1. בקובץ ה-.env, נסה לכתוב את השם המלא, למשל: YourUsername/RepoName")
-        print("   2. ודא שהרפוזיטורי אכן נוצר בחשבון הגיטהאב שלך.")
-        print("   3. ודא שלטוקן שלך בגיטהאב (Personal Access Token) יש וי (V) על הרשאת 'repo'.")
-        print(f"פירוט טכני: {e}")
-        return
+// --- SLIDE COMPONENTS ---
 
-    # 1. קריאת קובץ ה-React (App.jsx) - ודא שהנתיב נכון למחשב שלך
-    original_file_path = "/Users/david/Documents/PyCharm/GitHub/BIA_upload_and_build.py"
+// 1. Title Slide
+const TitleSlide = () => (
+    <div className="flex flex-col items-center justify-center h-full text-center space-y-8 bg-gradient-to-br from-slate-50 to-white">
+      <div className="w-32 h-32 bg-sky-600 rounded-[2.5rem] flex items-center justify-center shadow-2xl shadow-sky-200 print:border print:border-slate-200">
+        <ShieldCheck className="w-16 h-16 text-white" />
+      </div>
+      <div>
+        <h1 className="text-6xl font-black text-slate-800 mb-4 tracking-tight">המשכיות עסקית (BCP) וניהול משברים</h1>
+        <h2 className="text-3xl text-sky-600 font-normal">סיכום תהליך BIA ודיון במוכנות החברה</h2>
+      </div>
+      <div className="mt-12 px-10 py-3 bg-white rounded-full text-sky-700 text-xl font-bold shadow-xl border border-sky-100 print:border-slate-300">
+        דירקטוריון PayBox • אפריל 2026
+      </div>
+    </div>
+);
 
-    if not os.path.exists(original_file_path):
-        print(f"❌ שגיאה: הקובץ לא נמצא בנתיב: {original_file_path}")
-        return
+// 2. 2025 Review Slide (New)
+const YearInReviewSlide = () => (
+  <div className="h-full flex flex-col justify-center px-16 overflow-hidden">
+    <div className="mb-8">
+        <h2 className="text-4xl font-bold text-slate-800 mb-4 border-r-8 border-sky-500 pr-6">2025: מוכנות והתמודדות בזמן אמת</h2>
+        <p className="text-slate-500 text-xl">סיכום אירועי השנה החולפת והפקת לקחים</p>
+    </div>
 
-    print(f"📖 קורא את הקובץ: {original_file_path}...")
-    with open(original_file_path, 'r', encoding='utf-8') as f:
-        user_code = f.read()
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 flex-grow max-h-[60vh]">
+      <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 relative flex flex-col h-full hover:shadow-lg transition-shadow print:border-slate-300">
+        <div className="flex items-center gap-4 mb-5">
+          <div className="bg-sky-50 p-4 rounded-2xl"><Zap className="w-8 h-8 text-sky-500" /></div>
+          <h3 className="text-2xl font-bold text-slate-800">התמודדות עם מצבי קיצון</h3>
+        </div>
+        <p className="space-y-4 text-slate-600 text-lg leading-relaxed flex-grow">
+          במהלך השנה החולפת, החברה נדרשה להתמודד עם מספר אירועי קיצון. המערכות והצוותים הפגינו חוסן תפעולי מרשים, תוך שמירה על רציפות השירות ללקוחות בצורה מיטבית וללא פגיעה מהותית בפעילות העסקית.
+        </p>
+      </div>
 
-    # --- קבצי התשתית של הפרויקט ---
+      <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 relative flex flex-col h-full hover:shadow-lg transition-shadow print:border-slate-300">
+        <div className="flex items-center gap-4 mb-5">
+          <div className="bg-sky-50 p-4 rounded-2xl"><Target className="w-8 h-8 text-sky-500" /></div>
+          <h3 className="text-2xl font-bold text-slate-800">תרגיל "דלתות מסתובבות"</h3>
+        </div>
+        <p className="space-y-4 text-slate-600 text-lg leading-relaxed flex-grow">
+          כחלק משמירה על דריכות גבוהה, קיימנו השנה תרגיל סייבר והמשכיות עסקית מקיף שבחן את מוכנות צוותי החירום וההנהלה בתרחישי פתע. התרגיל הוכתר בהצלחה, חידד את נהלי העבודה והציף תובנות טקטיות שיושמו מיידית.
+        </p>
+      </div>
 
-    package_json = """{
-  "name": "bia-presentation",
-  "private": true,
-  "version": "1.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "lucide-react": "^0.344.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-react": "^4.2.1",
-    "autoprefixer": "^10.4.18",
-    "postcss": "^8.4.35",
-    "tailwindcss": "^3.4.1",
-    "vite": "^5.1.4"
-  }
-}"""
+      <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 relative flex flex-col h-full hover:shadow-lg transition-shadow print:border-slate-300">
+        <div className="flex items-center gap-4 mb-5">
+          <div className="bg-sky-50 p-4 rounded-2xl"><Eye className="w-8 h-8 text-sky-500" /></div>
+          <h3 className="text-2xl font-bold text-slate-800">מבט קדימה</h3>
+        </div>
+        <p className="space-y-4 text-slate-600 text-lg leading-relaxed flex-grow">
+          הניסיון המעשי שנצבר במהלך שנת 2025, לצד הפקת הלקחים מהתרגולים השוטפים, היוו בסיס מקצועי לביצוע תהליך סקר השפעות העסק (BIA) שיוצג כעת להנהלה ולדירקטוריון.
+        </p>
+      </div>
+    </div>
+  </div>
+);
 
-    # הוספת base: './' הכרחי עבור GitHub Pages
-    vite_config = """import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+// 3. Context Slide (Updated)
+const ContextSlide = () => (
+    <div className="h-full flex flex-col justify-center px-16 overflow-hidden">
+      <h2 className="text-4xl font-bold text-slate-800 mb-8 border-r-8 border-sky-500 pr-6">רקע ומטרות התהליך</h2>
 
-export default defineConfig({
-  plugins: [react()],
-  base: './', 
-})"""
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 flex-grow max-h-[60vh]">
+        <div className="bg-sky-50/60 p-8 rounded-[2rem] border border-sky-100 relative overflow-hidden flex flex-col justify-center print:border-slate-200">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="bg-white p-4 rounded-2xl shadow-sm print:border print:border-slate-200">
+               <Activity className="w-8 h-8 text-sky-600" />
+            </div>
+            <h3 className="text-2xl font-bold text-slate-800">רקע</h3>
+          </div>
+          <div className="space-y-4 text-slate-600 text-xl leading-relaxed">
+            <p>
+              <strong>PayBox</strong> נדרשת להבטיח זמינות ורציפות תפקודית גם בתרחישי הקיצון המחמירים ביותר.
+            </p>
+            <p>
+              בחודשים האחרונים החברה ביצעה סקר מקיף (BIA), חוצה חברה, במסגרתו מופו התהליכים הקריטיים, נקבעו להם יעדי התאוששות (RTO) בהתאם למחויבות רגולטוריות ושירותיות, וגובשו חלופות שונות ליישום התהליכים בזמן משבר (ככל שיידרש).
+            </p>
+            <p>
+              המסמך הנוכחי הינו התוצר של תהליך זה.
+            </p>
+          </div>
+        </div>
 
-    tailwind_config = """/** @type {import('tailwindcss').Config} */
-export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-}"""
+        <div className="bg-white p-8 rounded-[2rem] shadow-lg border border-slate-100 relative flex flex-col justify-center print:border-slate-300">
+          <div className="flex items-center gap-4 mb-6">
+             <div className="bg-sky-100 p-4 rounded-2xl shadow-sm print:border print:border-sky-200">
+                <Target className="w-8 h-8 text-sky-600" />
+             </div>
+            <h3 className="text-2xl font-bold text-slate-800">עקרונות מנחים בעת חירום</h3>
+          </div>
+          <p className="text-slate-600 text-lg mb-4">רמת הקריטיות של התהליכים השונים ויעדי ההתאוששות שלהם נקבעו בראי שלושה עקרונות מנחים:</p>
+          <ul className="space-y-6 text-slate-600 text-xl">
+            <li className="flex items-start gap-4">
+              <span className="mt-2 w-2.5 h-2.5 bg-sky-500 rounded-full flex-shrink-0"></span>
+              <span><strong>ודאות פיננסית:</strong> נגישות לתמונת מצב פיננסית – עדכנית ושלמה – בכל נקודת זמן.</span>
+            </li>
+            <li className="flex items-start gap-4">
+              <span className="mt-2 w-2.5 h-2.5 bg-sky-500 rounded-full flex-shrink-0"></span>
+              <span><strong>נגישות לקוחות לכספם:</strong> הבטחת רציפות (ככל שניתן) של יכולת הלקוחות למשוך את כספם.</span>
+            </li>
+            <li className="flex items-start gap-4">
+              <span className="mt-2 w-2.5 h-2.5 bg-sky-500 rounded-full flex-shrink-0"></span>
+              <span><strong>רצף שירותי:</strong> שמירה (ככל שניתן) על רצף שירות/קשר עם הלקוחות.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
 
-    postcss_config = """export default {
-  plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
-  },
-}"""
+      <div className="mt-6 text-slate-500 text-base font-medium flex items-center gap-2 bg-slate-50/80 px-4 py-2 rounded-xl border border-slate-200 w-fit print:border-slate-300 print:bg-white">
+          <span className="text-sky-500 font-bold text-lg">*</span>
+          PayBox איננה כפופה לנב״ת 355 על פי הגדרה, אך כפופה להנחיות הקבוצתיות של דיסקונט.
+      </div>
+    </div>
+);
 
-    index_html = """<!DOCTYPE html>
-<html lang="he" dir="rtl">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="https://payboxapp.com/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800;900&display=swap" rel="stylesheet">
-    <title>PayBox BIA Presentation</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
-</html>"""
+// 4. RTO Definitions & Criticality (Updated)
+const RtoStrategySlide = () => (
+    <div className="h-full flex flex-col justify-center px-16 animate-fadeIn overflow-hidden">
+        <div className="mb-10">
+            <h2 className="text-4xl font-bold text-slate-800 mb-4 border-r-8 border-indigo-400 pr-6">יעדי התאוששות וזמן (RTO)</h2>
+            <p className="text-slate-500 text-2xl">חלוקת תהליכי הליבה ל-3 רמות דחיפות/קריטיות, בראי 3 העקרונות המנחים</p>
+        </div>
 
-    main_jsx = """import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
-import './index.css'
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 flex-grow max-h-[55vh]">
+            {/* Critical */}
+            <div className="bg-white border-2 border-rose-100 p-8 rounded-[2rem] shadow-lg flex flex-col print:border-rose-300 transform transition-transform hover:scale-105">
+                <div className="flex justify-between items-start mb-6">
+                    <div className="bg-rose-50 w-16 h-16 rounded-2xl flex items-center justify-center"><AlertCircle className="w-8 h-8 text-rose-500" /></div>
+                    <div className="bg-rose-500 text-white px-4 py-1.5 rounded-full font-bold shadow-sm text-lg">24 שעות (קריטי)</div>
+                </div>
+                <h3 className="text-2xl font-bold text-slate-800 mb-2">פעילות שירות וליבה</h3>
+                <ul className="space-y-4 text-slate-600 text-xl flex-grow mt-4">
+                  <li className="flex items-center gap-3"><div className="w-2 h-2 rounded-full bg-rose-400"></div> מתן מידע ללקוח</li>
+                  <li className="flex items-center gap-3"><div className="w-2 h-2 rounded-full bg-rose-400"></div> ניהול נזילות</li>
+                </ul>
+            </div>
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-)"""
+            {/* High */}
+            <div className="bg-white border-2 border-amber-100 p-8 rounded-[2rem] shadow-lg flex flex-col print:border-amber-300 transform transition-transform hover:scale-105">
+                <div className="flex justify-between items-start mb-6">
+                    <div className="bg-amber-50 w-16 h-16 rounded-2xl flex items-center justify-center"><Briefcase className="w-8 h-8 text-amber-500" /></div>
+                    <div className="bg-amber-500 text-white px-4 py-1.5 rounded-full font-bold shadow-sm text-lg">96 שעות (חשיבות גבוהה)</div>
+                </div>
+                <h3 className="text-2xl font-bold text-slate-800 mb-2">משיכות ומחויבות משפטית</h3>
+                <ul className="space-y-4 text-slate-600 text-xl flex-grow mt-4">
+                  <li className="flex items-center gap-3"><div className="w-2 h-2 rounded-full bg-amber-400"></div> אפשור משיכת כספים</li>
+                  <li className="flex items-center gap-3"><div className="w-2 h-2 rounded-full bg-amber-400"></div> מחויבויות רגולטוריות/משפטיות</li>
+                </ul>
+            </div>
 
-    index_css = """@tailwind base;
-@tailwind components;
-@tailwind utilities;
+            {/* Medium */}
+            <div className="bg-white border-2 border-emerald-100 p-8 rounded-[2rem] shadow-lg flex flex-col print:border-emerald-300 transform transition-transform hover:scale-105">
+                <div className="flex justify-between items-start mb-6">
+                    <div className="bg-emerald-50 w-16 h-16 rounded-2xl flex items-center justify-center"><Clock className="w-8 h-8 text-emerald-500" /></div>
+                    <div className="bg-emerald-500 text-white px-4 py-1.5 rounded-full font-bold shadow-sm text-lg">120 שעות (חשיבות בינונית)</div>
+                </div>
+                <h3 className="text-2xl font-bold text-slate-800 mb-2">תפעול והתחשבנות</h3>
+                <div className="text-slate-600 text-xl flex-grow mt-4">
+                  <span className="font-bold mb-2 block">תהליכים פנימיים מרכזיים:</span>
+                  <ul className="space-y-3">
+                    <li className="flex items-center gap-3"><div className="w-2 h-2 rounded-full bg-emerald-400"></div> דיווחים כספיים</li>
+                    <li className="flex items-center gap-3"><div className="w-2 h-2 rounded-full bg-emerald-400"></div> ניטור הונאות</li>
+                    <li className="flex items-center gap-3"><div className="w-2 h-2 rounded-full bg-emerald-400"></div> תשלום לספקים</li>
+                  </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+);
 
-body {
-  font-family: 'Heebo', system-ui, -apple-system, sans-serif;
-  margin: 0;
-  padding: 0;
-}"""
+// 5. Manual Fallbacks & Scenarios (Updated)
+const ScenariosSlide = () => (
+    <div className="h-full flex flex-col justify-center px-16 animate-fadeIn overflow-hidden">
+        <div className="mb-8">
+            <h2 className="text-4xl font-bold text-slate-800 mb-4 border-r-8 border-sky-400 pr-6">מעקפים ופתרונות בעת חירום</h2>
+            <p className="text-slate-500 text-xl">בעת אירוע חירום, החברה תפעל לאפשר את התהליכים הקריטיים בערוצים חלופיים</p>
+        </div>
 
-    workflow_yaml = """name: Deploy React App to GitHub Pages
+        <div className="grid grid-cols-2 gap-10 flex-grow max-h-[60vh]">
+            <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 relative flex flex-col h-full hover:shadow-lg transition-shadow print:border-slate-300">
+                <div className="flex items-center gap-4 mb-5">
+                    <div className="bg-sky-50 p-4 rounded-2xl"><Globe className="w-8 h-8 text-sky-500" /></div>
+                    <h3 className="text-2xl font-bold text-slate-800">תשתיות טכנולוגיות ומידע</h3>
+                </div>
+                <ul className="space-y-6 text-slate-600 text-lg">
+                    <li className="flex items-start gap-3">
+                        <div className="w-2.5 h-2.5 rounded-full bg-sky-500 mt-2 shrink-0"></div>
+                        <div><strong>השבתת ענן (GCP):</strong> הקמה מיידית של בסיס הנתונים (MongoDB) ב-Region חלופי, או התבססות על נתוני דוח מנכ"ל לעדכון רשומות ידני.</div>
+                    </li>
+                    <li className="flex items-start gap-3">
+                        <div className="w-2.5 h-2.5 rounded-full bg-sky-500 mt-2 shrink-0"></div>
+                        <div><strong>קריסת אפליקציה ואתר אינטרנט:</strong> העלאת אתר חלופי מהיר על גבי פלטפורמת Wix למתן עדכונים שוטפים לציבור הלקוחות.</div>
+                    </li>
+                    <li className="flex items-start gap-3">
+                        <div className="w-2.5 h-2.5 rounded-full bg-sky-500 mt-2 shrink-0"></div>
+                        <div><strong>חוסר נגישות למשרדי החברה:</strong> מעבר לסביבת Cato-Networks לאנשי מפתח במקרה של קריסת מערכות הגישה (Prisma/Okta).</div>
+                    </li>
+                </ul>
+            </div>
 
-on:
-  push:
-    branches: ["main", "master"]
-  workflow_dispatch:
+            <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 relative flex flex-col h-full hover:shadow-lg transition-shadow print:border-slate-300">
+                <div className="flex items-center gap-4 mb-5">
+                    <div className="bg-emerald-50 p-4 rounded-2xl"><Users className="w-8 h-8 text-emerald-500" /></div>
+                    <h3 className="text-2xl font-bold text-slate-800">שירות לקוחות ומוקדים</h3>
+                </div>
+                <ul className="space-y-6 text-slate-600 text-lg">
+                    <li className="flex items-start gap-3">
+                        <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 mt-2 shrink-0"></div>
+                        <div><strong>קריסת מערכת זנדסק (Zendesk):</strong> ניהול הפניות והטיפול בהן יבוצע באופן ידני באמצעות מסמך אקסל ייעודי הכולל תיעוד רטרואקטיבי או הסטת הפניות הכתובות למייל ייעודי עם תהליכי תור עבודה בין נציגים.</div>
+                    </li>
+                    <li className="flex items-start gap-3">
+                        <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 mt-2 shrink-0"></div>
+                        <div><strong>נפילת מרכזייה קולית:</strong> ניתוב אוטומטי של השיחות למספרי 076 באמצעות מערכת Cellact ותגבור נציגים.</div>
+                    </li>
+                    <li className="flex items-start gap-3">
+                        <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 mt-2 shrink-0"></div>
+                        <div><strong>ערוצים דיגיטליים:</strong> הסטת לקוחות באופן יזום לקבלת מענה דרך ערוצי מדיה חברתית ו-WhatsApp.</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+);
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+// 6. Finance Highlights (Updated)
+const FinanceSlide = () => (
+    <div className="h-full flex flex-col justify-center px-16 animate-fadeIn overflow-hidden">
+        <div className="mb-8 text-center shrink-0">
+            <h2 className="text-4xl font-bold text-slate-800 mb-2 border-b-4 border-indigo-500 inline-block pb-2">תמיכה בפעילות פיננסית בחירום (Finance BCP)</h2>
+            <p className="text-slate-500 text-2xl">רציפות התהליכים הכספיים הקריטיים בעת אירוע חירום</p>
+        </div>
+        <div className="grid grid-cols-3 gap-8 flex-grow max-h-[50vh] min-h-0">
 
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+            <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 hover:shadow-xl transition-all group flex flex-col h-full print:border-slate-300">
+                <div className="flex items-center gap-4 mb-5 shrink-0">
+                    <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center group-hover:bg-indigo-100 transition-colors"><Scale className="w-7 h-7 text-indigo-600" /></div>
+                    <h3 className="text-xl font-bold text-slate-800">ניהול נזילות (24 ש')</h3>
+                </div>
+                <p className="text-slate-600 text-lg leading-relaxed mb-4">ניהול נזילות בחשבון הבנק לצרכי ביצוע תשלומים ללקוחות על בסיס הנתונים (MongoDB) ב-Region חלופי.</p>
+                <div className="mt-auto bg-slate-50 p-4 rounded-xl">
+                    <p className="text-slate-700 font-medium">במידת הצורך, ניהול הנזילות יתבצע באופן ידני לחלוטין באמצעות התחברות ישירה לאתר האינטרנט של בנק דיסקונט.</p>
+                </div>
+            </div>
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
+            <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 hover:shadow-xl transition-all group flex flex-col h-full print:border-slate-300">
+                <div className="flex items-center gap-4 mb-5 shrink-0">
+                    <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center group-hover:bg-indigo-100 transition-colors"><CreditCard className="w-7 h-7 text-indigo-600" /></div>
+                    <h3 className="text-xl font-bold text-slate-800">תשלומי לקוחות (96 ש')</h3>
+                </div>
+                <p className="text-slate-600 text-lg leading-relaxed mb-4">בניית תהליך אלטרנטיבי של משיכת כספים מיתרות הלקוחות באפליקציה (לאחר זיהוי ואימות) ורישום זמני של הפעולה לטובת סנכרון עתידי.</p>
+                <div className="mt-auto bg-slate-50 p-4 rounded-xl">
+                    <p className="text-slate-700 font-medium">במידת הצורך, ביצוע התשלום באמצעות ייצור קובץ מס״ב ידני ו/או קובץ אקסל חלופי במבנה הנדרש למס"ב.</p>
+                </div>
+            </div>
 
-      - name: Install Dependencies
-        run: npm install
+            <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 hover:shadow-xl transition-all group flex flex-col h-full print:border-slate-300">
+                <div className="flex items-center gap-4 mb-5 shrink-0">
+                    <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center group-hover:bg-indigo-100 transition-colors"><FileSpreadsheet className="w-7 h-7 text-indigo-600" /></div>
+                    <h3 className="text-xl font-bold text-slate-800">דיווחים כספיים (120 ש')</h3>
+                </div>
+                <p className="text-slate-600 text-lg leading-relaxed mb-4">הכנת דיווחים כספיים ורגולטוריים במערכת הפריוריטי בעת שגרה.</p>
+                <div className="mt-auto bg-slate-50 p-4 rounded-xl">
+                    <p className="text-slate-700 font-medium">במידת הצורך וככל שאין ברירה, הגשת בקשת דחייה מסודרת לעיכוב פרסום הדוחות.</p>
+                </div>
+            </div>
 
-      - name: Build Project
-        run: npm run build
+        </div>
+    </div>
+);
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
+// 7. Work Plan & Resilience (Updated with Board Approval)
+const WorkPlanSlide = () => (
+    <div className="h-full flex flex-col justify-center px-16 animate-fadeIn overflow-hidden">
+        <div className="mb-6">
+            <h2 className="text-4xl font-bold text-slate-800 mb-4 border-r-8 border-sky-400 pr-6">מיקוד תוכנית עבודה 2026 ואשרור מדיניות</h2>
+        </div>
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: './dist'
+        <div className="flex flex-col gap-6 flex-grow max-h-[65vh]">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-3/5">
+                {/* Part 1: Proven Resilience */}
+                <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 relative flex flex-col h-full hover:shadow-lg transition-shadow print:border-slate-300">
+                    <div className="flex items-center gap-4 mb-4">
+                        <div className="bg-emerald-50 p-3 rounded-2xl print:border print:border-emerald-200"><Globe className="w-6 h-6 text-emerald-500" /></div>
+                        <h3 className="text-xl font-bold text-slate-800">שימור הגמישות תפעולית הקיימת</h3>
+                    </div>
+                    <div className="space-y-3 text-slate-600 text-base leading-relaxed flex-grow">
+                        <p>החברה עובדת בצורה גמישה מאוד מזה מספר שנים. התרגול מתקופת הקורונה, וכן מאז תחילת מלחמת ״חרבות ברזל״, אישש את העובדה כי החברה מתפקדת היטב ללא נגישות פיזית למשרדיה.</p>
+                        <p>קיימת נגישות מלאה לכלל הנכסים מרחוק, מה שמאפשר הפעלה רציפה של כלל המחלקות.</p>
+                        <p className="font-semibold text-emerald-700 bg-emerald-50 p-2 rounded inline-block">עצם העובדה שכלל מערכות החברה מבוססות ענן, מחזקת ומבססת יכולת זו.</p>
+                    </div>
+                </div>
 
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-"""
+                {/* Part 2: Work Plan */}
+                <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 relative flex flex-col h-full hover:shadow-lg transition-shadow print:border-slate-300">
+                    <div className="flex items-center gap-4 mb-4">
+                        <div className="bg-sky-50 p-3 rounded-2xl print:border print:border-sky-200"><Target className="w-6 h-6 text-sky-500" /></div>
+                        <h3 className="text-xl font-bold text-slate-800">המיקוד לשנה הקרובה – תרגול מעשי</h3>
+                    </div>
+                    <div className="space-y-3 text-slate-600 text-base leading-relaxed flex-grow">
+                        <p>מעבר לאישור תוכנית ה-BIA, תוכנית העבודה לשנה הקרובה תמוקד בתרגול מעשי של הפתרונות העוקפים.</p>
+                        <ul className="space-y-2 mt-2">
+                            <li className="flex items-start gap-2">
+                                <div className="w-2 h-2 rounded-full bg-sky-500 mt-2 shrink-0"></div>
+                                <div>יושם דגש על מעבר ויכולת לבניית קבצי שידור מס״ב ישירות משליפת נתונים מה-MongoDB.</div>
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <div className="w-2 h-2 rounded-full bg-sky-500 mt-2 shrink-0"></div>
+                                <div>יבוצע תרגול בפועל של ניתוב שיחות למוקד בעת חירום להבטחת רציפות השירות.</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
 
-    print("\n📦 מעלה קבצי תשתית לפרויקט...")
+            {/* Part 3: Board Decision */}
+            <div className="bg-sky-600 text-white p-6 rounded-[2rem] shadow-lg relative flex flex-col h-2/5 justify-center print:border-slate-300 print:bg-slate-100 print:text-slate-800">
+                <div className="flex items-center gap-4 mb-2">
+                    <div className="bg-white/20 p-3 rounded-2xl print:bg-slate-200"><CheckSquare className="w-6 h-6 text-white print:text-slate-800" /></div>
+                    <h3 className="text-2xl font-bold">החלטה לדירקטוריון</h3>
+                </div>
+                <div className="text-lg leading-relaxed text-sky-50 print:text-slate-700 mt-2">
+                    <strong>אשרור מסמך המדיניות (BCP):</strong> לאור העובדה כי לא חלו שינויים מהותיים במסמך מדיניות ההמשכיות העסקית עצמו מעבר לעדכוני יעדי ה-BIA שהוצגו, הדירקטוריון מתבקש בזאת לאשרר את מדיניות ה-BCP של החברה לשנת 2026.
+                </div>
+            </div>
+        </div>
+    </div>
+);
 
-    # העלאת קבצי התצורה וההגדרות
-    upload_to_github(repo, "package.json", package_json)
-    upload_to_github(repo, "vite.config.js", vite_config)
-    upload_to_github(repo, "tailwind.config.js", tailwind_config)
-    upload_to_github(repo, "postcss.config.js", postcss_config)
+// 8. Thank You Slide
+const ThankYouSlide = () => (
+    <div className="flex flex-col items-center justify-center h-full text-center space-y-8 animate-fadeIn bg-gradient-to-br from-sky-50 to-white">
+        <div className="w-32 h-32 bg-sky-100 rounded-full flex items-center justify-center mb-2 shadow-inner print:border print:border-slate-300">
+            <CheckCircle className="w-16 h-16 text-sky-500" />
+        </div>
+        <div>
+            <h1 className="text-7xl font-extrabold text-slate-800 mb-4 tracking-tight">תודה רבה!</h1>
+            <p className="text-2xl text-slate-500 max-w-2xl mx-auto leading-relaxed">
+                נשמח לענות על כל שאלה.
+            </p>
+        </div>
+    </div>
+);
 
-    # העלאת קבצי המקור
-    upload_to_github(repo, "index.html", index_html)
-    upload_to_github(repo, "src/main.jsx", main_jsx)
-    upload_to_github(repo, "src/index.css", index_css)
+// --- MAIN APP ---
+const App = () => {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [currentSlide, setCurrentSlide] = useState(0);
+    const [isPrintMode, setIsPrintMode] = useState(false);
 
-    # העלאת הקוד של המצגת (הקובץ המקומי)
-    print("📜 מעלה את הקוד המקורי שלך...")
-    upload_to_github(repo, "src/App.jsx", user_code)
+    const slides = [
+        { component: <TitleSlide />, label: "פתיחה" },
+        { component: <YearInReviewSlide />, label: "2025: התמודדות בזמן אמת" },
+        { component: <ContextSlide />, label: "רקע ומטרות" },
+        { component: <RtoStrategySlide />, label: "RTO ורמות קריטיות" },
+        { component: <ScenariosSlide />, label: "מעקפים ופתרונות בחירום" },
+        { component: <FinanceSlide />, label: "פעילות פיננסית בחירום" },
+        { component: <WorkPlanSlide />, label: "תוכנית עבודה ואשרור" },
+        { component: <ThankYouSlide />, label: "סיום" },
+    ];
 
-    # העלאת ה-Workflow
-    print("⚙️ מגדיר אוטומציה ב-GitHub Actions...")
-    upload_to_github(repo, ".github/workflows/deploy.yml", workflow_yaml)
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (!isAuthenticated || isPrintMode) return;
+            if (e.key === 'ArrowLeft') setCurrentSlide(prev => Math.min(prev + 1, slides.length - 1));
+            else if (e.key === 'ArrowRight') setCurrentSlide(prev => Math.max(prev - 1, 0));
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isAuthenticated, isPrintMode, slides.length]);
 
-    print("\n" + "=" * 60)
-    print("✅ הסתיים בהצלחה!")
-    print("GitHub בונה כעת את האתר (יקח 1-2 דקות).")
+    const nextSlide = () => setCurrentSlide(prev => Math.min(prev + 1, slides.length - 1));
+    const prevSlide = () => setCurrentSlide(prev => Math.max(prev - 1, 0));
 
+    if (!isAuthenticated) return <LoginScreen onLogin={() => setIsAuthenticated(true)} />;
 
-if __name__ == "__main__":
-    main()
+    if (isPrintMode) {
+        return (
+            <div className="min-h-screen bg-slate-200 font-sans flex flex-col items-center gap-8 py-8 print:p-0 print:bg-white print:block" dir="rtl" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+                <style>{`
+                    @media print {
+                        @page { size: 1536px 864px; margin: 0; }
+                        body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; background: white !important; margin: 0 !important; padding: 0 !important; }
+                        .no-print { display: none !important; }
+                        * { box-shadow: none !important; text-shadow: none !important; }
+                        .print-border { border: 1px solid #cbd5e1 !important; }
+                        .print-page-container { width: 1536px !important; height: 864px !important; page-break-after: always; break-after: page; overflow: hidden !important; position: relative !important; background: white !important; margin: 0 !important; padding: 0 !important; border: none !important; box-shadow: none !important; transform: none !important; }
+                    }
+                `}</style>
+
+                <div className="fixed top-4 right-4 z-50 flex gap-4 no-print">
+                    <button onClick={() => window.print()} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full shadow-lg transition-all"><Printer className="w-5 h-5" />הדפס / שמור כ-PDF</button>
+                    <button onClick={() => setIsPrintMode(false)} className="flex items-center gap-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded-full shadow-md transition-all"><X className="w-5 h-5" />חזור למצגת</button>
+                </div>
+
+                {slides.map((slide, index) => (
+                    <div key={index} className="print-page-container w-[1536px] h-[864px] relative bg-white shadow-xl border border-slate-300 shrink-0 mx-auto overflow-hidden no-print-transform" style={{"@media screen": {transform: "scale(0.7)", transformOrigin: "top center", marginBottom: "-200px"}}}>
+                        <div className="absolute top-6 left-8 text-slate-300 text-sm font-bold z-50 no-print">
+                            {index + 1} / {slides.length} • {APP_VERSION}
+                        </div>
+                        {slide.component}
+                    </div>
+                ))}
+            </div>
+        );
+    }
+
+    return (
+        <div className="w-screen h-screen flex flex-col items-center justify-center bg-slate-100 p-8 overflow-hidden font-sans" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}} dir="rtl">
+            <div className="bg-white w-[98vw] h-[92vh] rounded-[3.5rem] shadow-2xl border border-white/60 relative overflow-hidden flex flex-col">
+                <div className="w-full h-3 bg-sky-50"><div className="h-full bg-sky-500 transition-all duration-700 ease-in-out" style={{ width: `${((currentSlide + 1) / slides.length) * 100}%` }}></div></div>
+                <div className="flex-grow relative overflow-hidden">
+                    {slides[currentSlide].component}
+                </div>
+                <div className="h-28 bg-white border-t border-slate-50 flex items-center justify-between px-16 shrink-0">
+                    <div className="text-slate-400 text-xl font-medium flex gap-4"><span>שקף {currentSlide + 1} מתוך {slides.length} | {slides[currentSlide].label}</span></div>
+                    <div className="flex gap-6 items-center">
+                        <button onClick={() => setIsPrintMode(true)} className="flex items-center gap-2 text-sky-600 hover:text-sky-800 bg-sky-50 hover:bg-sky-100 px-4 py-2 rounded-xl transition-all font-semibold mr-4"><Printer className="w-5 h-5" /><span className="hidden md:inline">הכן להדפסה / PDF</span></button>
+                        <div className="h-8 w-px bg-slate-200 mx-2"></div>
+                        <button onClick={prevSlide} disabled={currentSlide === 0} className={`p-5 rounded-full ${currentSlide === 0 ? 'text-slate-300 bg-slate-50' : 'bg-white shadow-lg border border-slate-100 text-slate-600 hover:bg-sky-50 hover:text-sky-600'} transition-all`}><ChevronRight className="w-8 h-8" /></button>
+                        <button onClick={nextSlide} disabled={currentSlide === slides.length - 1} className={`p-5 rounded-full ${currentSlide === slides.length - 1 ? 'text-slate-300 bg-slate-50' : 'bg-sky-500 shadow-xl shadow-sky-200 text-white hover:bg-sky-600 hover:shadow-sky-300'} transition-all`}><ChevronLeft className="w-8 h-8" /></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default App;
